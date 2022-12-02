@@ -6,42 +6,42 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 
-workers = 3
+nodes = 3
 
 Vagrant.configure("2") do |config|
 
-  config.vm.define "manager" do |manager|
+  config.vm.define "master" do |master|
 
-    manager.vm.box = "bento/ubuntu-22.04"
-    manager.vm.hostname = "manager"
-    manager.vm.network "private_network", ip: "10.0.1.100"
-    manager.vm.synced_folder "./data", "/vagrant_data"
-    manager.vm.provider "virtualbox" do |vb|    
+    master.vm.box = "bento/ubuntu-22.04"
+    master.vm.hostname = "master"
+    master.vm.network "private_network", ip: "10.0.1.100"
+    master.vm.synced_folder "./data", "/vagrant_data"
+    master.vm.provider "virtualbox" do |vb|    
       # Customize the amount of memory on the VM:
-      vb.name = "manager"
+      vb.name = "master"
       vb.memory = "512"
       vb.cpus = 1
     end
 
-   manager.vm.provision "shell", path: "manager.sh"
+   master.vm.provision "shell", path: "master.sh"
 
   end
 
-  (1..workers).each do |i|
+  (1..nodes).each do |i|
 
-    config.vm.define "worker#{i}" do |worker|
-      worker.vm.box = "bento/ubuntu-22.04"
-      worker.vm.hostname = "worker#{i}"
-      worker.vm.network "private_network", ip: "10.0.1.#{i+100}"
-      worker.vm.synced_folder "./data", "/vagrant_data"
+    config.vm.define "node0#{i}" do |node|
+      node.vm.box = "bento/ubuntu-22.04"
+      node.vm.hostname = "node#{i}"
+      node.vm.network "private_network", ip: "10.0.1.#{i+100}"
+      node.vm.synced_folder "./data", "/vagrant_data"
 
-      worker.vm.provider "virtualbox" do |vb|    
-        vb.name = "worker#{i}"
+      node.vm.provider "virtualbox" do |vb|    
+        vb.name = "node#{i}"
         vb.memory = "512"
         vb.cpus = 1
       end
 
-     worker.vm.provision "shell", path: "worker.sh"
+     node.vm.provision "shell", path: "node.sh"
     end
 
   end
